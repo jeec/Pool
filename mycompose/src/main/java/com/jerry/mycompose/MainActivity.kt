@@ -23,8 +23,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    Greeting("Android111")
                     Log.i(">>>", "asdf")
+
+
                 }
             }
         }
@@ -43,6 +45,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     MyApplicationTheme {
-        Greeting("Android")
+        Greeting("Android123")
     }
 }
