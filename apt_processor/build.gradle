@@ -1,0 +1,22 @@
+plugins {
+    id 'java-library'
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
+}
+
+dependencies {
+    //依赖上注解module
+    implementation project(":apt_annotation")
+    //谷歌提供的自动注册服务
+    implementation 'com.google.auto.service:auto-service:1.0-rc6'
+    annotationProcessor 'com.google.auto.service:auto-service:1.0-rc6'
+    //如果是koltin用kapt注解
+    //kapt 'com.google.auto.service:auto-service:1.0-rc6'
+
+    //生成java代码库
+    implementation 'com.squareup:javapoet:1.10.0'
+}
