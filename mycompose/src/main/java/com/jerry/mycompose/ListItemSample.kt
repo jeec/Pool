@@ -24,6 +24,7 @@ fun ListItemSample() {
     }
 
     Column {
+
         repeat(19) {
             ListItem(headlineText = {
                 Text(text = "headLineText")
