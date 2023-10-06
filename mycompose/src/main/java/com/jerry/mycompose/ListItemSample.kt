@@ -44,7 +44,7 @@ fun ListItemSample() {
 
 }
 
-data class MyData(val title: String)
+data class MyData(val title: String, val name: String = "asdf")
 
 @Preview
 @Composable
