@@ -27,7 +27,7 @@ fun ListItemSample() {
 
         repeat(19) {
             ListItem(headlineText = {
-                Text(text = "headLineText")
+                Text(text = "headLineText11")
             }, overlineText = {
                 Text(text = "overLineText")
             }, supportingText = {
