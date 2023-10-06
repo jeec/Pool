@@ -1,10 +1,12 @@
 package com.jerry.mycompose
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -19,35 +21,48 @@ import androidx.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListItemSample() {
-    val data = remember {
-        mutableStateListOf(MyData("sanEr"), MyData("siEr"))
+    var data = remember {
+        mutableStateListOf(
+            MyData("sanEr", true),
+            MyData("sanEr", false),
+            MyData("sanEr", false),
+            MyData("sanEr", false),
+        )
     }
-
+    Log.i(">>>", "start")
     Column {
-        //test commit history
-        //test again
-        //test 2 again
-        //test 3 again
-        repeat(19) {
-            ListItem(headlineText = {
-                Text(text = "headLineText11")
-            }, overlineText = {
-                Text(text = "overLineText22")
-            }, supportingText = {
-                Text(text = "supportingText")
-            }, leadingContent = {
-                Icon(imageVector = Icons.Default.Person, contentDescription = null)
-//        Text(text = "leadingContent")
-            }, trailingContent = {
-                Icon(imageVector = Icons.Default.Close, contentDescription = null)
-//        Text(text = "trailingContent")
-            }, colors = ListItemDefaults.colors(trailingIconColor = Color.Red, headlineColor = Color.Green))
+        repeat(data.size) {index ->
+            ListItem(
+                headlineText = {
+                    Text(text = "headLineText11")
+                },
+                overlineText = {
+                    Text(text = "overLineText22")
+                },
+                supportingText = {
+                    Text(text = "supportingText")
+                },
+                leadingContent = {
+                    Checkbox(checked = data[index].bChecked, onCheckedChange = { bChecked ->
+                        Log.i(">>>", "$bChecked")
+                        data[index].bChecked = bChecked
+                        //todo 此处只改变内部的MyData，并未通知到data,所以点击页面CheckBox无反映
+                    })
+                },
+                trailingContent = {
+                    Icon(imageVector = Icons.Default.Close, contentDescription = null)
+                },
+                colors = ListItemDefaults.colors(
+                    trailingIconColor = Color.Red,
+                    headlineColor = Color.Green
+                )
+            )
         }
     }
 
 }
 
-data class MyData(val title: String, val name: String = "asdf")
+data class MyData(val title: String, var bChecked: Boolean = false)
 
 @Preview
 @Composable
