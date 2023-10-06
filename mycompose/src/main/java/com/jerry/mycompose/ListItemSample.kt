@@ -1,7 +1,12 @@
 package com.jerry.mycompose
 
 import android.util.Log
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -13,8 +18,10 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -27,10 +34,22 @@ fun ListItemSample() {
             MyData("sanEr", false),
             MyData("sanEr", false),
             MyData("sanEr", false),
+            MyData("sanEr", true),
+            MyData("sanEr", false),
+            MyData("sanEr", false),
+            MyData("sanEr", false),
+            MyData("sanEr", true),
+            MyData("sanEr", false),
+            MyData("sanEr", false),
+            MyData("sanEr", false),
         )
     }
     Log.i(">>>", "start")
-    Column {
+    val scroller = rememberScrollState()
+    Column (
+        //加上此项可以上下滑动
+        modifier = Modifier.verticalScroll(scroller)
+    ){
         repeat(data.size) {index ->
             ListItem(
                 headlineText = {
@@ -57,9 +76,16 @@ fun ListItemSample() {
                     headlineColor = Color.Green
                 )
             )
+
+            //检查创建和销毁生命周期
+            DisposableEffect(Unit) {
+                Log.i(">>>", "111_disposableEffect")
+                onDispose {
+                    Log.i(">>>", "222_onDispose")
+                }
+            }
         }
     }
-
 }
 
 data class MyData(val title: String, var bChecked: Boolean = false)
