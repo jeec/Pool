@@ -86,7 +86,7 @@ fun MyApp() {
                 }
             }
             composable(
-                route = "$ROUTE_3/{$param}",//此处param外侧一定要加{}。
+                route = "$ROUTE_3/{$param}",//todo 此处param外侧一定要加{}。
                 arguments = listOf(
                     navArgument(param) {
                         type = NavType.StringType
