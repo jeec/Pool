@@ -61,50 +61,10 @@ fun MyApp() {
             }
         }
     ) { it ->
-        NavHost(
+        RallyNavHost(
             navController = navController,
-            startDestination = ROUTE_1,
             modifier = Modifier.padding(it)
-        ) {
-            composable(route = ROUTE_1) {
-                Box(modifier = Modifier.background(Color.Red)) {
-                    Text(text = "first", fontSize = 63.sp)
-                    LazyColumn(content = {
-                        items(20) {
-                            ListItem(headlineText = {
-                                Text(text = "$it")
-                            })
-                        }
-                    })
-                }
-            }
-            composable(route = ROUTE_2) {
-                Box(modifier = Modifier.background(color = Color.Blue)) {
-                    TextButton(onClick = {
-                        navController.goPage("$ROUTE_3/$data")
-                    }) {
-                        Text(text = "second", fontSize = 63.sp)
-                    }
-                }
-            }
-            composable(
-                route = "$ROUTE_3/{$param}",//todo 此处param外侧一定要加{}。
-                arguments = listOf(
-                    navArgument(param) {
-                        type = NavType.StringType
-                    }),
-                deepLinks = listOf(
-                    navDeepLink {
-                        uriPattern = "rally://$ROUTE_3/{$param}"
-                    }
-                )
-            ) { navBackStackEntry ->
-                val nameValue = navBackStackEntry.arguments?.getString(param)
-                Box(modifier = Modifier.background(Color.Green)) {
-                    Text(text = "third_$nameValue", fontSize = 63.sp)
-                }
-            }
-        }
+        )
     }
 }
 
