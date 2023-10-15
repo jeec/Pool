@@ -1,6 +1,7 @@
 package com.jerry.mycompose.navi
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -24,6 +25,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 
 class NavigatorActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,7 +92,12 @@ fun MyApp() {
                 arguments = listOf(
                     navArgument(param) {
                         type = NavType.StringType
-                    })
+                    }),
+                deepLinks = listOf(
+                    navDeepLink {
+                        uriPattern = "rally://$ROUTE_3/{$param}"
+                    }
+                )
             ) { navBackStackEntry ->
                 val nameValue = navBackStackEntry.arguments?.getString(param)
                 Box(modifier = Modifier.background(Color.Green)) {
