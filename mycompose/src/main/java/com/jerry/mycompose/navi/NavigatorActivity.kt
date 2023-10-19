@@ -54,7 +54,7 @@ fun MyApp() {
                     Text(text = "tab2")
                 }
                 TextButton(onClick = {
-                    navController.goPage(ROUTE_3)
+                    navController.goPage("$ROUTE_3/args from clickTabBtn")
                 }) {
                     Text(text = "tab3")
                 }
