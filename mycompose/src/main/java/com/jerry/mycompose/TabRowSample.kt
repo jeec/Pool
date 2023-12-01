@@ -32,22 +32,21 @@ fun TabRowSample() {
         mutableStateOf(0)
     }
 
-    TabRow(selectedTabIndex = selectedTab,
-        divider = {
-            Divider(color = Color.Green)
-        },
-        indicator = { tabPositions ->
-            TabRowDefaults.Indicator(
-                Modifier
-                    .tabIndicatorOffset(tabPositions[selectedTab])
-                    .border(20.dp, Color.Red, shape = RoundedCornerShape(15.dp)),
-                height = 20.dp,
-                color = Color.Transparent//将真实的背景色隐藏起来，用border调大，用作背景颜色。
-            )
-        }) {
+    TabRow(selectedTabIndex = selectedTab, divider = {
+        Divider(color = Color.Green)
+    }, indicator = { tabPositions ->
+        TabRowDefaults.Indicator(
+            Modifier
+                .tabIndicatorOffset(tabPositions[selectedTab])
+                .border(20.dp, Color.Red, shape = RoundedCornerShape(15.dp)),
+            height = 20.dp,
+            color = Color.Transparent//将真实的背景色隐藏起来，用border调大，用作背景颜色。
+        )
+    }) {
         Tab(selected = selectedTab == 0,
             selectedContentColor = Color.Red,
-            unselectedContentColor = Color.Gray, onClick = {
+            unselectedContentColor = Color.Gray,
+            onClick = {
                 selectedTab = 0
             }) {
             Text(text = "type 111")
@@ -59,14 +58,11 @@ fun TabRowSample() {
         }, onClick = {
             selectedTab = 1
         })
-        LeadingIconTab(selected = selectedTab == 2,
-            onClick = {
-                selectedTab = 2
-            },
-            text = { Text(text = "type 333") },
-            icon = {
-                Icon(imageVector = Icons.Default.AccountBox, contentDescription = null)
-            })
+        LeadingIconTab(selected = selectedTab == 2, onClick = {
+            selectedTab = 2
+        }, text = { Text(text = "type 333") }, icon = {
+            Icon(imageVector = Icons.Default.AccountBox, contentDescription = null)
+        })
     }
 }
 

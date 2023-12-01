@@ -14,6 +14,10 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.tooling.preview.Preview
 import com.jerry.myapplication.ui.theme.MyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
+import java.util.concurrent.ThreadFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -44,13 +48,34 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        myTest.print()
-        myTestInterface.print(myInterface)
-        myInterface.print()
-        myTestString.print()
+//        myTest.print()
+//        myTestInterface.print(myInterface)
+//        myInterface.print()
+//        myTestString.print()
 
         Log.i(">>>", "stringA: $stringA,  stringB: $stringB")
         Log.i(">>>", injectedStr)
+
+
+        val scheduledPool = Executors.newScheduledThreadPool(3)
+//        {
+//            Thread {
+//                Log.w(TAG, "newThread: ")
+//            }
+//        }
+//        val fixedPool = Executors.newFixedThreadPool(10)
+
+//        repeat(10) {
+//            scheduledPool.scheduleAtFixedRate({
+//                Log.i(TAG, "onCreate$it: ${Thread.currentThread().name}")
+//            }, 1, 1, TimeUnit.SECONDS)
+//        }
+    //        fixedPool.submit()
+
+    }
+
+    companion object {
+        private const val TAG = ">>>"
     }
 }
 
