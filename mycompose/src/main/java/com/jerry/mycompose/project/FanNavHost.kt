@@ -18,8 +18,8 @@ fun FunNavHost(navController: NavHostController, modifier: Modifier) {
         composable(Study.route) {
             StudyPage()
         }
-//        composable(Mine.route) {
-//            MinePage()
-//        }
+        composable(Mine.route) {
+            MinePage()
+        }
     }
 }

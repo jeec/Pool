@@ -1,5 +1,6 @@
 package com.jerry.mycompose.project.components.study
 
+import android.util.Log
 import androidx.annotation.IntRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -15,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -31,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.fontscaling.MathUtils
 import androidx.compose.ui.unit.sp
 import com.jerry.mycompose.project.vm.StudyViewModel
+import kotlinx.coroutines.delay
 import org.jetbrains.annotations.Range
 import kotlin.concurrent.fixedRateTimer
 

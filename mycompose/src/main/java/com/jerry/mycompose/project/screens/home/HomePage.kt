@@ -141,7 +141,6 @@ fun HomePage(
                 NotificationContent(vm)
             }
             //5 列表
-            Log.i(">>>", "123456")
             if (vm.bShowAffairs) {
                 items(articleVm.articleData) {
                     ArticleItem(article = it)
