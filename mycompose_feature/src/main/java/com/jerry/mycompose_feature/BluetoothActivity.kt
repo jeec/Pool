@@ -93,6 +93,7 @@ class BluetoothActivity : AppCompatActivity() {
         }
     }
 
+    @Deprecated("")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Log.d(">>>", "onActivityResult: $requestCode")

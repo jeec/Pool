@@ -6,6 +6,7 @@ import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -15,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun SlideSample() {
     var progress by remember {
-        mutableStateOf(0f)
+        mutableFloatStateOf(0f)
     }
     Slider(value = progress, onValueChange = {
         progress = it

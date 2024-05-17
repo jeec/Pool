@@ -5,11 +5,30 @@
       <entry key="PlaygroundPreview">
         <State />
       </entry>
+      <entry key="app">
+        <State />
+      </entry>
       <entry key="mycompose">
         <State />
       </entry>
       <entry key="mycompose_feature">
         <State />
+      </entry>
+      <entry key="routeapp">
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="COLD_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="$USER_HOME$/.android/avd/New_Device_API_33.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-05-12T12:43:49.587899Z" />
+        </State>
       </entry>
     </value>
   </component>
