@@ -1,6 +1,7 @@
 package com.jerry.routeapp
 
 import android.content.Context
+import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
@@ -8,7 +9,6 @@ import android.view.View
 import android.view.WindowManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.LinearLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.jerry.routeapp.ui.theme.MyApplicationTheme
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -65,6 +67,11 @@ class MainActivity : ComponentActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 }
+
+val ziRoomRouter = listOf(
+    "E4:F3:E8:E9:59:AC",
+//    "32:1F:6B:37:09:54"
+)
 
 val staticDevices = listOf(
     "D4:90:9C:D3:4E:6C"
@@ -106,6 +113,9 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     val devices = remember {
         mutableStateOf(emptyList<String>())
     }
+    var rxState by remember {
+        mutableDoubleStateOf(0.0)
+    }
 
     val stateEmptyRoom1 by remember {
         derivedStateOf {
@@ -125,6 +135,11 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     val stateEmptyRoom4 by remember {
         derivedStateOf {
             devices.value.intersect(roomNextToMine).isEmpty()
+        }
+    }
+    val stateZiRoomRouterInUse by remember {
+        derivedStateOf {
+            rxState > 5 //determine if people connected by 5KB
         }
     }
 
@@ -158,19 +173,27 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     }
 
     LaunchedEffect(devices.value) {
-        if (isAtDay()) {
+        if (isAtDayTime()) {
             playAlarmWhenComingBack(context, devices.value)
         }
     }
 
+    LaunchedEffect(stateZiRoomRouterInUse) {
+        if (isAtDayTime()) {
+            playAlarmRx(context)
+        }
+    }
+
     Column(modifier = modifier.background(Color.Black)) {
-        WebViewScreen { newDevicesList ->
+        WebViewScreen { newDevicesList, newRx ->
             devices.value = newDevicesList
+            rxState = newRx
         }
         val buildStr = buildAnnotatedString {
 //            append("当前连接")
-            val devicesCountWithoutMine = devices.value.subtract(myIphone).size
-            val colorOfDeviceNum = if (devicesCountWithoutMine>0) Color.Red else Color.DarkGray
+            val devicesCountWithoutMine =
+                devices.value.subtract(myIphone).subtract(ziRoomRouter).size
+            val colorOfDeviceNum = if (devicesCountWithoutMine > 0) Color.Red else Color.DarkGray
             withStyle(
                 style = SpanStyle(
                     color = colorOfDeviceNum,
@@ -182,7 +205,12 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
             }
 //            append("台")
         }
-        Text(text = buildStr, color = Color.Gray)
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+            Text(text = buildStr, color = Color.Gray)
+            if (stateZiRoomRouterInUse) {
+                Text(text = "AC", fontSize = 180.sp, color = Color.Red)
+            }
+        }
 
         //房间布局
         Column(
@@ -231,7 +259,7 @@ fun RoomText(text: String, stateEmptyRoom: Boolean) {
 }
 
 @Composable
-fun WebViewScreen(onChange: (List<String>) -> Unit) {
+fun WebViewScreen(onChange: (List<String>, Double) -> Unit) {
     AndroidView(
         factory = { context ->
             WebView(context).apply {
@@ -249,13 +277,38 @@ fun WebViewScreen(onChange: (List<String>) -> Unit) {
             webView.webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
-                    //val jsCode = "javascript:var result = { var1: var1, var2: var2, var3: var3 }; JSON.stringify(result);";
+                    val jsCode =
+                        "javascript:var result = { var1: net_mac_list, var2: ip_stat}; JSON.stringify(result);"
+                    view?.evaluateJavascript(jsCode) { wholeItem ->
+                        val noEscapeCharacter = wholeItem.replace("\\", "").drop(1).dropLast(1)
+                        val json = JSONObject(noEscapeCharacter)
+                        val dataMac = json.getJSONArray("var1")
+                        val dataFlowing = json.getJSONArray("var2")
+                        var targetIp = ""
+                        var rx: Double = 0.0
+                        //step_1: find target IP
+                        for (i in 0 until dataMac.length()) {
+                            val dataWithMacArray = dataMac.getString(i).split(";")
+                            val targetMac = dataWithMacArray[1] //second:mac
+                            if (targetMac == ziRoomRouter.first()) {
+                                targetIp = dataWithMacArray.first() //first:ip
+                                break
+                            }
+                        }
+                        //step_2: find realtime uploading data via target IP
+                        for (i in 0 until dataFlowing.length()) {
+                            val ip = dataFlowing.getJSONArray(i).getString(0)
+                            if (ip == targetIp) {
+                                val itemFlowData = dataFlowing.getJSONArray(i)
+                                val tx = itemFlowData.getDouble(6) / 8
+                                rx = itemFlowData.getDouble(8) / 8
+                                val itemStr = itemFlowData.getString(0) + " tx: $tx /// rx: $rx"
+                                Log.d(">>>", "onPageFinished: $itemStr")
+                            }
+                        }
 
-                    view?.evaluateJavascript(
-                        "(function() { return net_mac_list; })();"
-                    ) { wholeItem ->
                         val deviceOnlyWithMacAddress =
-                            wholeItem.drop(1).dropLast(1)
+                            dataMac.toString().drop(1).dropLast(1)
                                 .split(",")
                                 .toMutableList()
                                 .map {
@@ -267,7 +320,7 @@ fun WebViewScreen(onChange: (List<String>) -> Unit) {
                                 .toList()
 
                         Log.d(">>>", "onPageFinished: $deviceOnlyWithMacAddress")
-                        onChange(deviceOnlyWithMacAddress)
+                        onChange(deviceOnlyWithMacAddress, rx)
                     }
                 }
             }
@@ -280,17 +333,40 @@ fun getCurrentFormatTime(): String {
     return dateFormat.format(Date())
 }
 
+var mediaPlayer1: MediaPlayer? = null
+var mediaPlayer2: MediaPlayer? = null
+
 fun playAlarmWhenComingBack(context: Context, devices: List<String>, myRoom: Boolean = false) {
     val resourceAudio = if (myRoom) {
         if (devices.isEmpty()) R.raw.room_empty else R.raw.meeting_the_stars
     } else {
         if (devices.isEmpty()) R.raw.room_empty else R.raw.meeting_the_stars
     }
-    val mediaPlayer = MediaPlayer.create(context, resourceAudio)
-    mediaPlayer?.start() // 播放音频
+    mediaPlayer1?.release()
+    mediaPlayer1 = MediaPlayer.create(context, resourceAudio)
+    // 设置音频属性
+    val audioAttributes = AudioAttributes.Builder()
+        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+        .setUsage(AudioAttributes.USAGE_MEDIA)
+        .build()
+    mediaPlayer1?.setAudioAttributes(audioAttributes)
+    mediaPlayer1?.setOnPreparedListener {
+        mediaPlayer1?.start() // 播放音频
+    }
+    mediaPlayer1?.setVolume(0.03f, 0.03f)
 }
 
-fun isAtDay(): Boolean {
+fun playAlarmRx(context: Context) {
+    val resourceAudio = R.raw.didi
+    mediaPlayer2?.release()
+    mediaPlayer2 = MediaPlayer.create(context, resourceAudio)
+    mediaPlayer2?.setOnPreparedListener {
+        mediaPlayer2?.start() // 播放音频
+    }
+    mediaPlayer2?.setVolume(1f, 1f)
+}
+
+fun isAtDayTime(): Boolean {
     val hourOfDay = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
     return hourOfDay in 8..24
 }
