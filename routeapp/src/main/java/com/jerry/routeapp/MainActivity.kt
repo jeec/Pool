@@ -3,6 +3,7 @@ package com.jerry.routeapp
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.media.MediaPlayer.OnErrorListener
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -93,13 +94,14 @@ val myIphone = listOf(
 
 val roomAcrossMine = listOf(
     "B8:31:B5:99:58:F1",//笔记电脑
+    "B6:79:FC:76:34:0F",//手机
 )
 
 val roomNextToMine = listOf(
     "D4:90:9C:D3:4E:6C",//morenfangjian 隔壁音箱
     "72:A4:7F:32:9B:BF",//华为手机
     "32:C4:63:8E:3E:C6",//未知
-    "B6:79:FC:76:34:0F",//手机
+    "8E:9E:0A:46:EA:BD",//maybe his gf
 )
 
 //未知设备
@@ -173,6 +175,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     }
 
     LaunchedEffect(devices.value) {
+        Log.d(">>>", "launchedEffect: devices.value changed: ${devices.value}")
         if (isAtDayTime()) {
             playAlarmWhenComingBack(context, devices.value)
         }
@@ -344,16 +347,18 @@ fun playAlarmWhenComingBack(context: Context, devices: List<String>, myRoom: Boo
     }
     mediaPlayer1?.release()
     mediaPlayer1 = MediaPlayer.create(context, resourceAudio)
-    // 设置音频属性
-    val audioAttributes = AudioAttributes.Builder()
-        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-        .setUsage(AudioAttributes.USAGE_MEDIA)
-        .build()
-    mediaPlayer1?.setAudioAttributes(audioAttributes)
     mediaPlayer1?.setOnPreparedListener {
         mediaPlayer1?.start() // 播放音频
     }
-    mediaPlayer1?.setVolume(0.03f, 0.03f)
+    mediaPlayer1?.setOnCompletionListener {
+        it.release()
+        mediaPlayer1 = null
+    }
+    mediaPlayer1?.setOnErrorListener { mp, what, extra ->
+        Log.e(">>>", "what:$what, extra: $extra ")
+        true
+    }
+    mediaPlayer1?.setVolume(0.1f, 0.1f)
 }
 
 fun playAlarmRx(context: Context) {
@@ -362,6 +367,10 @@ fun playAlarmRx(context: Context) {
     mediaPlayer2 = MediaPlayer.create(context, resourceAudio)
     mediaPlayer2?.setOnPreparedListener {
         mediaPlayer2?.start() // 播放音频
+    }
+    mediaPlayer2?.setOnCompletionListener {
+        it.release()
+        mediaPlayer2 = null
     }
     mediaPlayer2?.setVolume(1f, 1f)
 }
