@@ -20,7 +20,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Device
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.UiMode
@@ -40,7 +39,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android111")
+                    Greeting("Android121")
                     Log.i(">>>", "asdf")
                 }
             }
@@ -72,7 +71,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 //    }
 
     val annotatedString = buildAnnotatedString {
-        append("Let's start learning: ")
+        append("Let's start learning it: ")
 
         pushStringAnnotation("firstUrl", "https://www.baidu.com")
         withStyle(

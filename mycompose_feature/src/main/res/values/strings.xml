@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Fun</string>
+    <string name="title_activity_bank">BankActivity</string>
+    <string name="title_activity_bank2">Bank2Activity</string>
+</resources>

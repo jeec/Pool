@@ -4,10 +4,8 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="testRunner" value="GRADLE" />
-        <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleJvm" value="jbr-17" />
+        <option name="gradleJvm" value="#GRADLE_LOCAL_JAVA_HOME" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
@@ -16,10 +14,15 @@
             <option value="$PROJECT_DIR$/apt_processor" />
             <option value="$PROJECT_DIR$/myapplication" />
             <option value="$PROJECT_DIR$/mycompose" />
+            <option value="$PROJECT_DIR$/mycompose_feature" />
             <option value="$PROJECT_DIR$/mylibrary_1" />
             <option value="$PROJECT_DIR$/mylibrary_2" />
+            <option value="$PROJECT_DIR$/myredux" />
+            <option value="$PROJECT_DIR$/routeapp" />
+            <option value="$PROJECT_DIR$/routelibrary" />
           </set>
         </option>
+        <option name="resolveExternalAnnotations" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

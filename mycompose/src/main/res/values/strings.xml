@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">MyCompose</string>
     <string name="text_str">Hello guys I am coming here to teach you a lesson</string>
+    <string name="title_activity_navigator">NavigatorActivity</string>
 
 </resources>
