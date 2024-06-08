@@ -95,6 +95,7 @@ val myIphone = listOf(
 val roomAcrossMine = listOf(
     "B8:31:B5:99:58:F1",//笔记电脑
     "B6:79:FC:76:34:0F",//手机
+    "3C:7D:0A:F2:62:36", //ipadAir"
 )
 
 val roomNextToMine = listOf(
@@ -106,7 +107,11 @@ val roomNextToMine = listOf(
 
 //未知设备
 val unknownDevices = listOf(
-    "56:3A:64:E1:B1:0B"
+    "56:3A:64:E1:B1:0B",
+)
+
+val newDevices = listOf(
+    "72:72:0E:60:D5:6B", //new HuaWei phone
 )
 
 @Composable
