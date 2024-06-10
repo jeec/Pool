@@ -63,6 +63,12 @@ android {
     }
 }
 
+configurations {
+    implementation {
+        canBeResolved = true
+    }
+}
+
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
@@ -100,4 +106,6 @@ dependencies {
 
     implementation project(":mylibrary_1")
     implementation project(":mylibrary_2")
+
+    implementation 'io.github.shawxingkwok:android-util-view:1.0.8'
 }
