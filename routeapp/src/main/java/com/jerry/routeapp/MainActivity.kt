@@ -69,6 +69,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+fun master(): Unit {
+    
+}
+
 val ziRoomRouter = listOf(
     "E4:F3:E8:E9:59:AC",
 //    "32:1F:6B:37:09:54"
