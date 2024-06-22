@@ -89,7 +89,7 @@ val myDevices = listOf(
 )
 
 val myIphone = listOf(
-    "32:1F:6B:37:09:54",//iphone
+    "2A:42:BC:E2:88:51",//iphone
 )
 
 val roomAcrossMine = listOf(

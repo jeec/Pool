@@ -18,8 +18,10 @@
             <option value="$PROJECT_DIR$/mylibrary_1" />
             <option value="$PROJECT_DIR$/mylibrary_2" />
             <option value="$PROJECT_DIR$/myredux" />
+            <option value="$PROJECT_DIR$/myxmlproject" />
             <option value="$PROJECT_DIR$/routeapp" />
             <option value="$PROJECT_DIR$/routelibrary" />
+            <option value="$PROJECT_DIR$/xmlProject" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

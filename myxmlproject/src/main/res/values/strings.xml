@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MyXmlProject</string>
+    <string name="accessible_back_button">000返回111</string>
+    <string name="accessible_back_button_1">111返回222</string>
+</resources>
