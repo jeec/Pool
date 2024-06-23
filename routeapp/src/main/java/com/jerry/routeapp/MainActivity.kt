@@ -73,6 +73,7 @@ class MainActivity : ComponentActivity() {
 fun master(): Unit {
     //master1
     //m1
+    //m2
 }
 
 val ziRoomRouter = listOf(
