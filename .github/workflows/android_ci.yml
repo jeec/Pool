@@ -42,5 +42,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v2
         with:
-          name: app-release.apk
-          path: app/build/outputs/apk/release/app-release.apk
+          name: routeapp-release-unsigned.apk
+          path: routeapp/build/outputs/apk/release/routeapp-release-unsigned.apk
