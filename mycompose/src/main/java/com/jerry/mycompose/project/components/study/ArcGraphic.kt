@@ -62,7 +62,8 @@ fun ArcGraphic(vm: StudyViewModel) {
             drawArc(
                 Brush.linearGradient(colors = mutableListOf(Color.White, Color.White)),
                 startAngle = 150f,
-                sweepAngle = MathUtils.lerp(0f, 240f, (vm.points/1000f).coerceIn(0f, 1f)),
+//                sweepAngle = MathUtils.lerp(0f, 240f, (vm.points/1000f).coerceIn(0f, 1f)),
+                sweepAngle = 0f,
                 useCenter = false,
                 style = Stroke(25f, cap = StrokeCap.Round)
             )

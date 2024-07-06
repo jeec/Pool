@@ -73,7 +73,7 @@ class Bank2ViewModel : ViewModel() {
                 monthDay,
                 weekDayFormat,
                 "工资",
-                corporate = "深圳市万声文化科技有限公司",
+                corporate = "公司",
                 money = salaryData30K[index],
                 balance = balanceData30K[index]
             )
