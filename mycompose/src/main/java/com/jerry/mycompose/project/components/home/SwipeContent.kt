@@ -28,7 +28,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.fontscaling.MathUtils
 import com.jerry.mycompose.R
 import kotlinx.coroutines.launch
 import kotlin.concurrent.fixedRateTimer
