@@ -67,14 +67,6 @@ class MainActivity : ComponentActivity() {
         }
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
-    //branch_1 111
-    //b1
-    //new patch
-}
-
-fun master(): Unit {
-    //j1
-    //j2
 }
 
 val ziRoomRouter = listOf(
