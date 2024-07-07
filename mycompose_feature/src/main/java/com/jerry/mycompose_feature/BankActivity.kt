@@ -278,7 +278,7 @@ fun MoneyItem() {
             color = colorResource(id = R.color.item_title),
             fontWeight = FontWeight.Bold
         )
-        Text(text = "深圳市万声文化科技有限公司", modifier = Modifier.layoutId(id_company))
+        Text(text = "公司", modifier = Modifier.layoutId(id_company))
         Text(
             text = "工行借记卡 5439 21:23:13",
             modifier = Modifier.layoutId(id_card_num_time),
