@@ -69,17 +69,12 @@ class MainActivity : ComponentActivity() {
     }
     //branch_1 111
     //b1
-    //b2
-    //b3
-    //b4
-    //b5
+    //new patch
 }
 
 fun master(): Unit {
     //j1
     //j2
-    //j3
-    //j4
 }
 
 val ziRoomRouter = listOf(
@@ -103,6 +98,7 @@ val myDevices = listOf(
 
 val myIphone = listOf(
     "2A:42:BC:E2:88:51",//iphone
+    "56:31:F7:68:4C:AE",//my phone
 )
 
 val roomAcrossMine = listOf(
@@ -294,6 +290,7 @@ fun WebViewScreen(onChange: (List<String>, Double) -> Unit) {
             }
         },
         update = { webView ->
+
             webView.loadUrl("http://192.168.1.2/ip_statistics.asp?sort_turn=0&sort_item=8&max_row=9")
             webView.webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView?, url: String?) {

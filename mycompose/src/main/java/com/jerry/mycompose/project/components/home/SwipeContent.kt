@@ -28,7 +28,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.fontscaling.MathUtils
 import com.jerry.mycompose.R
 import kotlinx.coroutines.launch
 import kotlin.concurrent.fixedRateTimer
@@ -79,9 +78,10 @@ fun SwipeContent() {
                 val pageOffset =
                     ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction).absoluteValue
                 // We animate the alpha, between 50% and 100%
-                val lerp = MathUtils.lerp(
-                    start = 0.95f, stop = 1f, amount = 1f - pageOffset.coerceIn(0f, 1f)
-                )
+                val lerp = 0f
+//                = MathUtils.lerp(
+//                    start = 0.95f, stop = 1f, amount = 1f - pageOffset.coerceIn(0f, 1f)
+//                )
                 alpha = lerp
                 scaleX = lerp
                 scaleY = lerp

@@ -1,22 +1,15 @@
 package com.jerry.mycompose.project.components.study
 
-import android.util.Log
-import androidx.annotation.IntRange
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -30,12 +23,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.fontscaling.MathUtils
 import androidx.compose.ui.unit.sp
 import com.jerry.mycompose.project.vm.StudyViewModel
-import kotlinx.coroutines.delay
-import org.jetbrains.annotations.Range
-import kotlin.concurrent.fixedRateTimer
 
 @Composable
 fun ArcGraphic(vm: StudyViewModel) {
@@ -62,7 +51,8 @@ fun ArcGraphic(vm: StudyViewModel) {
             drawArc(
                 Brush.linearGradient(colors = mutableListOf(Color.White, Color.White)),
                 startAngle = 150f,
-                sweepAngle = MathUtils.lerp(0f, 240f, (vm.points/1000f).coerceIn(0f, 1f)),
+//                sweepAngle = MathUtils.lerp(0f, 240f, (vm.points/1000f).coerceIn(0f, 1f)),
+                sweepAngle = 0f,
                 useCenter = false,
                 style = Stroke(25f, cap = StrokeCap.Round)
             )
