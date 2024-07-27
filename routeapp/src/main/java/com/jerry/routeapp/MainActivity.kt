@@ -91,15 +91,21 @@ val myDevices = listOf(
 val myIphone = listOf(
     "2A:42:BC:E2:88:51",//iphone
     "56:31:F7:68:4C:AE",//my phone
+    "36:02:57:40:D6:2A",//my phone
 )
 
-val roomAcrossMine = listOf(
+val room1 = listOf(
     "B8:31:B5:99:58:F1",//笔记电脑
     "B6:79:FC:76:34:0F",//手机
     "3C:7D:0A:F2:62:36", //ipadAir"
 )
 
-val roomNextToMine = listOf(
+val room3 = listOf(
+    "0A:2C:4D:CD:28:84",
+    "28:39:26:94:CB:B7",
+)
+
+val room4 = listOf(
     "D4:90:9C:D3:4E:6C",//morenfangjian 隔壁音箱
     "72:A4:7F:32:9B:BF",//华为手机
     "32:C4:63:8E:3E:C6",//未知
@@ -127,7 +133,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 
     val stateEmptyRoom1 by remember {
         derivedStateOf {
-            devices.value.intersect(roomAcrossMine).isEmpty()
+            devices.value.intersect(room1).isEmpty()
         }
     }
     val stateEmptyRoom2 by remember {
@@ -137,12 +143,12 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     }
     val stateEmptyRoom3 by remember {
         derivedStateOf {
-            devices.value.intersect(myDevices).isEmpty()
+            devices.value.intersect(room3).isEmpty()
         }
     }
     val stateEmptyRoom4 by remember {
         derivedStateOf {
-            devices.value.intersect(roomNextToMine).isEmpty()
+            devices.value.intersect(room4).isEmpty()
         }
     }
     val stateZiRoomRouterInUse by remember {
@@ -180,7 +186,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         timeState4 = getCurrentFormatTime()
     }
 
-    LaunchedEffect(devices.value) {
+    LaunchedEffect(devices.value.size) {
         Log.d(">>>", "launchedEffect: devices.value changed: ${devices.value}")
         if (isAtDayTime()) {
             playAlarmWhenComingBack(context, devices.value)

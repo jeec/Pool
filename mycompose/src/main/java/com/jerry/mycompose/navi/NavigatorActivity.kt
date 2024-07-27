@@ -32,7 +32,7 @@ class NavigatorActivity : ComponentActivity() {
             MyApplicationTheme {
                 Surface {
 //                    MainFrame()
-                    Text(text = "asdf", modifier = Modifier.clickable {
+                    Text(text = "1asdf", modifier = Modifier.clickable {
                         finish()
                     })
                 }
