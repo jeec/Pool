@@ -1,9 +1,8 @@
 package com.jerry.routeapp
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.media.AudioAttributes
 import android.media.MediaPlayer
-import android.media.MediaPlayer.OnErrorListener
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -37,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,6 +44,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.jerry.routeapp.ui.theme.MyApplicationTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -58,8 +64,7 @@ class MainActivity : ComponentActivity() {
             MyApplicationTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     Greeting("Android")
                 }
@@ -71,7 +76,6 @@ class MainActivity : ComponentActivity() {
 
 val ziRoomRouter = listOf(
     "E4:F3:E8:E9:59:AC",
-//    "32:1F:6B:37:09:54"
 )
 
 val staticDevices = listOf(
@@ -124,8 +128,8 @@ val newDevices = listOf(
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    val devices = remember {
-        mutableStateOf(emptyList<String>())
+    var devices by remember {
+        mutableStateOf(emptyList<DeviceMacData>())
     }
     var rxState by remember {
         mutableDoubleStateOf(0.0)
@@ -133,27 +137,27 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 
     val stateEmptyRoom1 by remember {
         derivedStateOf {
-            devices.value.intersect(room1).isEmpty()
+            devices.any { room1.contains(it.mac) }.not()
         }
     }
     val stateEmptyRoom2 by remember {
         derivedStateOf {
-            devices.value.intersect(myDevices).isEmpty()
+            devices.any { myDevices.contains(it.mac) }.not()
         }
     }
     val stateEmptyRoom3 by remember {
         derivedStateOf {
-            devices.value.intersect(room3).isEmpty()
+            devices.any { room3.contains(it.mac) }.not()
         }
     }
     val stateEmptyRoom4 by remember {
         derivedStateOf {
-            devices.value.intersect(room4).isEmpty()
+            devices.any { room4.contains(it.mac) }.not()
         }
     }
     val stateZiRoomRouterInUse by remember {
         derivedStateOf {
-            rxState > 5 //determine if people connected by 5KB
+            rxState > 20 //determine if people connected by *KB
         }
     }
 
@@ -169,15 +173,15 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     var timeState4 by remember {
         mutableStateOf("")
     }
+    var timeState5 by remember {
+        mutableStateOf("")
+    }
 
     LaunchedEffect(stateEmptyRoom1) {
         timeState1 = getCurrentFormatTime()
     }
     LaunchedEffect(stateEmptyRoom2) {
         timeState2 = getCurrentFormatTime()
-//        if (stateEmptyRoom2) {
-//            playAlarmWhenComingBack(context, devices.value, true)
-//        }
     }
     LaunchedEffect(stateEmptyRoom3) {
         timeState3 = getCurrentFormatTime()
@@ -185,11 +189,13 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     LaunchedEffect(stateEmptyRoom4) {
         timeState4 = getCurrentFormatTime()
     }
+    LaunchedEffect(stateZiRoomRouterInUse) {
+        timeState5 = getCurrentFormatTime()
+    }
 
-    LaunchedEffect(devices.value.size) {
-        Log.d(">>>", "launchedEffect: devices.value changed: ${devices.value}")
+    LaunchedEffect(devices.size) {
         if (isAtDayTime()) {
-            playAlarmWhenComingBack(context, devices.value)
+            playAlarmWhenComingBack(context, devices)
         }
     }
 
@@ -200,20 +206,17 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     }
 
     Column(modifier = modifier.background(Color.Black)) {
-        WebViewScreen { newDevicesList, newRx ->
-            devices.value = newDevicesList
-            rxState = newRx
+        WebViewScreen { data ->
+            devices = data
+            rxState = data.find { ziRoomRouter.contains(it.mac) }?.rx ?: 0.0
         }
         val buildStr = buildAnnotatedString {
 //            append("当前连接")
-            val devicesCountWithoutMine =
-                devices.value.subtract(myIphone).subtract(ziRoomRouter).size
+            val devicesCountWithoutMine = devices.count { ziRoomRouter.contains(it.mac).not() }
             val colorOfDeviceNum = if (devicesCountWithoutMine > 0) Color.Red else Color.DarkGray
             withStyle(
                 style = SpanStyle(
-                    color = colorOfDeviceNum,
-                    fontSize = 208.sp,
-                    fontWeight = FontWeight.Bold
+                    color = colorOfDeviceNum, fontSize = 208.sp, fontWeight = FontWeight.Bold
                 )
             ) {
                 append(devicesCountWithoutMine.toString())
@@ -229,11 +232,12 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 
         //房间布局
         Column(
-            modifier = modifier
-                .fillMaxSize()
+            modifier = modifier.fillMaxSize()
         ) {
-
-            RoomText(text = "1\n${timeState1}", stateEmptyRoom1)
+            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                RoomText(text = "1\n${timeState1}", stateEmptyRoom1)
+                Text(text = timeState5, color = Color.DarkGray)
+            }
 
             Spacer(modifier = modifier.height(20.dp))
 
@@ -243,16 +247,14 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
             ) {
                 RoomText(text = "2\n${timeState2}", stateEmptyRoom = stateEmptyRoom2)
                 Text(
-                    text = "3\n${timeState3}",
-                    modifier = modifier
+                    text = "3\n${timeState3}", modifier = modifier
                         .background(
                             if (stateEmptyRoom3) Color.DarkGray else Color.Red
                         )
                         .size(100.dp, 140.dp)
                 )
                 Text(
-                    text = "4\n${timeState4}",
-                    modifier = modifier
+                    text = "4\n${timeState4}", modifier = modifier
                         .background(
                             if (stateEmptyRoom4) Color.DarkGray else Color.Red
                         )
@@ -273,76 +275,88 @@ fun RoomText(text: String, stateEmptyRoom: Boolean) {
     )
 }
 
+val scope = CoroutineScope(Dispatchers.Main)
+
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
-fun WebViewScreen(onChange: (List<String>, Double) -> Unit) {
-    AndroidView(
-        factory = { context ->
-            WebView(context).apply {
-                settings.javaScriptEnabled = true
-                webViewClient = WebViewClient()
+fun WebViewScreen(onChange: (List<DeviceMacData>) -> Unit) {
+    AndroidView(factory = { context ->
+        WebView(context).apply {
+            settings.javaScriptEnabled = true
+            webViewClient = WebViewClient()
 
-                settings.loadWithOverviewMode = true
-                settings.useWideViewPort = true
-                settings.setSupportZoom(true)
-                visibility = View.GONE
-            }
-        },
-        update = { webView ->
+            settings.loadWithOverviewMode = true
+            settings.useWideViewPort = true
+            settings.setSupportZoom(true)
+            visibility = View.GONE
+        }
+    }, update = { webView ->
 
-            webView.loadUrl("http://192.168.1.2/ip_statistics.asp?sort_turn=0&sort_item=8&max_row=9")
-            webView.webViewClient = object : WebViewClient() {
-                override fun onPageFinished(view: WebView?, url: String?) {
-                    super.onPageFinished(view, url)
-                    val jsCode =
-                        "javascript:var result = { var1: net_mac_list, var2: ip_stat}; JSON.stringify(result);"
-                    view?.evaluateJavascript(jsCode) { wholeItem ->
-                        val noEscapeCharacter = wholeItem.replace("\\", "").drop(1).dropLast(1)
-                        val json = JSONObject(noEscapeCharacter)
-                        val dataMac = json.getJSONArray("var1")
-                        val dataFlowing = json.getJSONArray("var2")
-                        var targetIp = ""
-                        var rx: Double = 0.0
-                        //step_1: find target IP
-                        for (i in 0 until dataMac.length()) {
-                            val dataWithMacArray = dataMac.getString(i).split(";")
-                            val targetMac = dataWithMacArray[1] //second:mac
-                            if (targetMac == ziRoomRouter.first()) {
-                                targetIp = dataWithMacArray.first() //first:ip
-                                break
-                            }
-                        }
-                        //step_2: find realtime uploading data via target IP
-                        for (i in 0 until dataFlowing.length()) {
-                            val ip = dataFlowing.getJSONArray(i).getString(0)
-                            if (ip == targetIp) {
-                                val itemFlowData = dataFlowing.getJSONArray(i)
-                                val tx = itemFlowData.getDouble(6) / 8
-                                rx = itemFlowData.getDouble(8) / 8
-                                val itemStr = itemFlowData.getString(0) + " tx: $tx /// rx: $rx"
-                                Log.d(">>>", "onPageFinished: $itemStr")
-                            }
-                        }
+        webView.loadUrl("http://192.168.1.2/ip_statistics.asp?sort_turn=0&sort_item=8&max_row=9")
+        webView.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                val jsCode =
+                    "javascript:var result = { var1: net_mac_list, var2: ip_stat}; JSON.stringify(result);"
+                view?.evaluateJavascript(jsCode) { wholeItem ->
+                    val noEscapeCharacter = wholeItem.replace("\\", "").drop(1).dropLast(1)
+                    val json = JSONObject(noEscapeCharacter)
+                    val dataMac = json.getJSONArray("var1")
+                    val dataFlowing = json.getJSONArray("var2")
 
-                        val deviceOnlyWithMacAddress =
-                            dataMac.toString().drop(1).dropLast(1)
-                                .split(",")
-                                .toMutableList()
-                                .map {
-                                    it.split(";")[1]
-                                }
-                                .subtract(myDevices)
-                                .subtract(unknownDevices)
-                                .subtract(staticDevices)
-                                .toList()
-
-                        Log.d(">>>", "onPageFinished: $deviceOnlyWithMacAddress")
-                        onChange(deviceOnlyWithMacAddress, rx)
+                    val job = scope.launch {
+                        val allData = evaluateData(dataMac, dataFlowing) //suspend
+                        val dataWithMacAndRx = eliminateUnwantedDate(allData)
+                        Log.d(">>>", "onPageFinished: $dataWithMacAndRx")
+                        onChange(dataWithMacAndRx)
                     }
                 }
             }
         }
-    )
+    })
 }
+
+private suspend fun evaluateData(
+    dataMac: JSONArray,
+    dataFlowing: JSONArray
+): MutableList<DeviceMacData> {
+    return coroutineScope {
+        val dataList = mutableListOf<DeviceMacData>()
+        //step_1: find target IP
+        for (i in 0 until dataMac.length()) {
+            val dataWithMacArray = dataMac.getString(i).split(";")
+
+            val targetIp = dataWithMacArray[0] //first:ip
+            val mac = dataWithMacArray[1] //second:mac
+
+            //step_2: find realtime uploading data via target IP
+            for (j in 0 until dataFlowing.length()) {
+                val ip = dataFlowing.getJSONArray(j).getString(0)
+                if (ip == targetIp) {
+                    val itemFlowData = dataFlowing.getJSONArray(j)
+//                    val tx = itemFlowData.getDouble(6) / 8
+                    val rx = itemFlowData.getDouble(8) / 8
+                    dataList.add(DeviceMacData(mac, rx))
+                }
+            }
+        }
+        dataList
+    }
+}
+
+private suspend fun eliminateUnwantedDate(dataMacList: MutableList<DeviceMacData>): List<DeviceMacData> {
+    return withContext(Dispatchers.Default) {
+        dataMacList.filterNot { data ->
+            myDevices.any { it == data.mac }
+                    || unknownDevices.any { it == data.mac }
+                    || staticDevices.any { it == data.mac }
+                    || myIphone.any { it == data.mac }
+//                    || ziRoomRouter.any { it == data.mac}
+        }
+    }
+}
+
+data class DeviceMacData(val mac: String, val rx: Double)
 
 fun getCurrentFormatTime(): String {
     val dateFormat = SimpleDateFormat("MM-dd HH:mm", Locale.getDefault())
@@ -352,7 +366,11 @@ fun getCurrentFormatTime(): String {
 var mediaPlayer1: MediaPlayer? = null
 var mediaPlayer2: MediaPlayer? = null
 
-fun playAlarmWhenComingBack(context: Context, devices: List<String>, myRoom: Boolean = false) {
+fun playAlarmWhenComingBack(
+    context: Context,
+    devices: List<DeviceMacData>,
+    myRoom: Boolean = false
+) {
     val resourceAudio = if (myRoom) {
         if (devices.isEmpty()) R.raw.room_empty else R.raw.meeting_the_stars
     } else {
